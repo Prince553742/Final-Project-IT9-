@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Project; 
 use App\Models\User; 
+use App\Models\Task; 
 
 
 class DashboardController extends Controller
@@ -27,12 +28,15 @@ class DashboardController extends Controller
         return view('manager.dashboard', compact('projects'));    
     }
 
+// Inside App\Http\Controllers\DashboardController.php
+
     public function viewWorkload(User $user)
     {
-        $tasks = \App\Models\Task::where('assigned_user_id', $user->id)
-            ->with('project')
-            ->orderBy('due_date', 'asc')
-            ->get();
+        // Fetch the user's tasks with their projects
+        $tasks = Task::where('assigned_user_id', $user->id)
+                    ->with('project')
+                    ->latest()
+                    ->get();
 
         return view('manager.workload', compact('user', 'tasks'));
     }

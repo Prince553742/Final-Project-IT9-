@@ -46,7 +46,7 @@
                         
                         {{-- Hidden Project ID to ensure the Controller knows which project this belongs to --}}
                         <input type="hidden" name="project_id" value="{{ $project->id ?? request()->query('project_id') }}">
-                        
+                                                
                         <div class="space-y-12">
                             {{-- TASK DETAILS --}}
                             <div class="max-w-5xl"> 
@@ -62,21 +62,40 @@
                                 @enderror
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-5xl">
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl">
                                 {{-- TEAM MEMBER ASSIGNMENT --}}
                                 <div>
                                     <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Team Member</label>
-                                    <select name="assigned_to" required
-                                        class="w-full rounded-xl shadow-sm py-4 px-6 text-gray-700 transition-colors @error('assigned_to') border-red-500 focus:border-red-500 focus:ring-red-200 @else border-gray-200 focus:border-green-500 focus:ring-green-500 @enderror">
+                                    <select name="assigned_user_id" required
+                                        class="w-full rounded-xl shadow-sm py-4 px-6 text-gray-700 transition-colors @error('assigned_user_id') border-red-500 focus:border-red-500 focus:ring-red-200 @else border-gray-200 focus:border-green-500 focus:ring-green-500 @enderror">
                                         <option value="">Select a member</option>
                                         @foreach($users as $user)
-                                            <option value="{{ $user->id }}" {{ old('assigned_to') == $user->id ? 'selected' : '' }}>
+                                            <option value="{{ $user->id }}" {{ old('assigned_user_id') == $user->id ? 'selected' : '' }}>
                                                 {{ $user->name }}
                                             </option>
                                         @endforeach
                                     </select>
 
-                                    @error('assigned_to')
+                                    @error('assigned_user_id')
+                                        <p class="text-red-500 text-xs font-bold mt-2 flex items-center">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                            {{ $message }}
+                                        </p>
+                                    @enderror
+                                </div>
+
+                                {{-- PRIORITY --}}
+                                <div>
+                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Priority</label>
+                                    <select name="priority" required
+                                        class="w-full rounded-xl shadow-sm py-4 px-6 text-gray-700 transition-colors @error('priority') border-red-500 focus:border-red-500 focus:ring-red-200 @else border-gray-200 focus:border-green-500 focus:ring-green-500 @enderror">
+                                        <option value="">Select priority</option>
+                                        <option value="Low" {{ old('priority') == 'Low' ? 'selected' : '' }}>Low</option>
+                                        <option value="Medium" {{ old('priority') == 'Medium' ? 'selected' : '' }}>Medium</option>
+                                        <option value="High" {{ old('priority') == 'High' ? 'selected' : '' }}>High</option>
+                                    </select>
+
+                                    @error('priority')
                                         <p class="text-red-500 text-xs font-bold mt-2 flex items-center">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                             {{ $message }}
@@ -87,10 +106,10 @@
                                 {{-- DEADLINE --}}
                                 <div>
                                     <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-4">Deadline</label>
-                                    <input type="date" name="deadline" required value="{{ old('deadline') }}"
-                                        class="w-full rounded-xl shadow-sm py-4 px-6 text-gray-700 transition-colors @error('deadline') border-red-500 focus:border-red-500 focus:ring-red-200 @else border-gray-200 focus:border-green-500 focus:ring-green-500 @enderror">
+                                    <input type="date" name="due_date" required value="{{ old('due_date') }}"
+                                        class="w-full rounded-xl shadow-sm py-4 px-6 text-gray-700 transition-colors @error('due_date') border-red-500 focus:border-red-500 focus:ring-red-200 @else border-gray-200 focus:border-green-500 focus:ring-green-500 @enderror">
                                     
-                                    @error('deadline')
+                                    @error('due_date')
                                         <p class="text-red-500 text-xs font-bold mt-2 flex items-center">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                                             {{ $message }}

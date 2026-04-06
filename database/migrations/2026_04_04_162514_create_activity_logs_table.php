@@ -9,13 +9,18 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up()
     {
         Schema::create('activity_logs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained()->onDelete('set null');
-            $table->string('action'); // e.g., "Logged In", "Task Created"
-            $table->text('description')->nullable(); 
+            
+            // Add this line to create the missing task_id column!
+            // We make it nullable in case some activity logs are for projects, not tasks.
+            $table->foreignId('task_id')->nullable()->constrained()->onDelete('cascade'); 
+            
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('action');
+            $table->text('description');
             $table->timestamps();
         });
     }

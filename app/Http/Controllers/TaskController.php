@@ -68,6 +68,29 @@ class TaskController extends Controller
         return redirect()->back()->with('success', 'Task status updated successfully!');
     }
 
+    // SHARED: Store Task Comment
+    public function storeComment(Request $request, Task $task)
+    {
+        $request->validate([
+            'comment' => 'required|string|max:1000'
+        ]);
+
+        TaskComment::create([
+            'task_id' => $task->id,
+            'user_id' => Auth::id(),
+            'comment' => $request->comment,
+        ]);
+
+        ActivityLog::create([
+            'task_id'     => $task->id,
+            'user_id'     => Auth::id(),
+            'action'      => 'Added Comment',
+            'description' => "Added a comment to the task."
+        ]);
+
+        return redirect()->back()->with('success', 'Comment added successfully!');
+    }
+
     // MEMBER: Dashboard
     public function memberDashboard()
     {
@@ -114,5 +137,17 @@ class TaskController extends Controller
     {
         $task->load(['project', 'assignedUser', 'comments.user']);
         return view('tasks.show', compact('task'));
+    }
+
+    // Add this inside your TaskController class
+    public function teamActivity()
+    {
+        // Fetch recent activities with their related user and task information
+        // Adjust the Model name if yours is different (e.g., Activity or Log)
+        $activities = \App\Models\ActivityLog::with(['user', 'task.project'])
+            ->latest()
+            ->paginate(10); 
+
+        return view('member.activity', compact('activities'));
     }
 }

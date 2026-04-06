@@ -64,7 +64,8 @@
                                 </td>
                                 
                                 <td class="py-5 px-4 text-right">
-                                    <a href="#" class="inline-flex items-center px-4 py-2 text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-lg hover:bg-gradient-to-r hover:from-indigo-600 hover:to-purple-600 hover:text-white hover:border-transparent transition-all duration-300 shadow-sm">
+                                    <a href="{{ route('manager.team.workload', is_array($member) ? $member['id'] : $member->id) }}" 
+                                    class="inline-flex items-center px-4 py-2 text-xs font-bold text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-lg hover:bg-gradient-to-r hover:from-indigo-600 hover:to-purple-600 hover:text-white hover:border-transparent transition-all duration-300 shadow-sm">
                                         View Workload
                                         <svg class="w-3.5 h-3.5 ml-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                                     </a>
@@ -87,4 +88,4 @@
 
         </div>
     </div>
-</x-app-layout>
+</x-app-layout> 

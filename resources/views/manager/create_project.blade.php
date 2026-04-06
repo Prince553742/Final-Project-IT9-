@@ -35,7 +35,7 @@
                         @csrf
                         
                         <div>
-                            <label for="title" class="block text-sm font-black text-gray-700 mb-2 uppercase tracking-wide">Project Title</label>
+                            <label for="name" class="block text-sm font-black text-gray-700 mb-2 uppercase tracking-wide">Project Title <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                                     <svg class="h-5 w-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
@@ -50,8 +50,8 @@
                         </div>
 
                         <div>
-                            <label for="due_date" class="block text-sm font-black text-gray-700 mb-2 uppercase tracking-wide">Due Date (Optional)</label>
-                            <input type="date" name="due_date" id="due_date" value="{{ old('due_date') }}" class="block w-full md:w-1/2 bg-gray-50 border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 py-3 px-4 font-medium text-gray-600">
+                            <label for="due_date" class="block text-sm font-black text-gray-700 mb-2 uppercase tracking-wide">Due Date <span class="text-red-500">*</span></label>
+                            <input type="date" name="due_date" id="due_date" value="{{ old('due_date') }}" class="block w-full md:w-1/2 bg-gray-50 border-gray-200 text-gray-900 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 py-3 px-4 font-medium text-gray-600" required>
                         </div>
 
                         <div class="pt-8 mt-8 border-t border-gray-100 flex items-center justify-end space-x-4">

@@ -56,12 +56,12 @@
                     </div>
 
                     <div class="bg-gray-50/80 px-6 py-4 border-t border-gray-100 flex justify-between items-center">
-                        <a href="#" class="inline-flex items-center text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-500 hover:text-white px-3 py-1.5 rounded-lg transition-all duration-200">
+                        <a href="{{ route('manager.tasks.create', ['project_id' => is_array($project) ? $project['id'] : $project->id]) }}" class="inline-flex items-center text-xs font-bold text-indigo-600 bg-indigo-50 hover:bg-indigo-500 hover:text-white px-3 py-1.5 rounded-lg transition-all duration-200">
                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                             ADD TASK
                         </a>
-                        
-                        <form action="#" method="POST" class="m-0">
+
+                        <form action="{{ route('manager.projects.destroy', is_array($project) ? $project['id'] : $project->id) }}" method="POST" class="m-0" onsubmit="return confirm('Are you sure you want to delete this project? This cannot be undone.');">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="inline-flex items-center text-xs font-bold text-red-500 bg-red-50 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg transition-all duration-200">

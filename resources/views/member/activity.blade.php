@@ -38,7 +38,7 @@
                                 $userName = is_array($activity) ? $activity['user'] : $activity->user->name;
                                 $userInitial = strtoupper(substr($userName, 0, 1));
                                 $actionType = is_array($activity) ? $activity['action'] : $activity->action;
-                                $description = is_array($activity) ? $activity['desc'] : $activity->description;
+                                    $description = is_array($activity) ? $activity['desc'] : ($activity->description ?? 'No description available');
 
                                 // Determine badge colors based on action text
                                 $badgeClass = 'bg-gray-50 text-gray-600 border-gray-200'; // Default
