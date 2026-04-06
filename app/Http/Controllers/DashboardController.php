@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\Project; 
+use App\Models\User; 
+
+
+class DashboardController extends Controller
+{
+    public function team()
+    {
+        $teamMembers = \App\Models\User::where('role', 'Team Member')
+            ->withCount(['tasks' => function ($query) {
+                $query->where('status', 'Pending');
+            }])
+            ->get();
+
+        return view('manager.team', compact('teamMembers'));
+    }
+
+    public function index()
+    {
+        $projects = Project::all(); 
+
+        return view('manager.dashboard', compact('projects'));    
+    }
+
+    public function viewWorkload(User $user)
+    {
+        $tasks = \App\Models\Task::where('assigned_user_id', $user->id)
+            ->with('project')
+            ->orderBy('due_date', 'asc')
+            ->get();
+
+        return view('manager.workload', compact('user', 'tasks'));
+    }
+}
