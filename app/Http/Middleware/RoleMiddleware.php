@@ -9,9 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 class RoleMiddleware
 {
-    /**
-     * Handle an incoming request.
-     */
+
     public function handle(Request $request, Closure $next, $role)
     {
         // Check if user is logged in AND if their role matches the requirement

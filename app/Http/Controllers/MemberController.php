@@ -16,21 +16,4 @@ class MemberController extends Controller
 
         return view('member.dashboard', compact('tasks'));
     }
-
-    public function updateStatus(Request $request, Task $task)
-    {
-        if ($task->assigned_user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        $request->validate([
-            'status' => 'required|in:Pending,In Progress,Completed',
-        ]);
-
-        $task->update([
-            'status' => $request->status
-        ]);
-
-        return redirect()->back()->with('success', 'Task status updated!');
-    }
 }

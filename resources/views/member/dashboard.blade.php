@@ -1,95 +1,70 @@
 <x-app-layout>
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
-
-            <div class="px-4 sm:px-0">
-                <h3 class="text-3xl font-extrabold text-gray-900 tracking-tight mb-1">
-                    Welcome back, <span class="bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500">{{ auth()->user()->name ?? 'Member' }}</span>!
-                </h3>
-                <p class="text-gray-500 text-sm font-medium">Here is an overview of your current workload and upcoming deadlines.</p>
+    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        {{-- Greeting --}}
+        <div class="mb-6 relative">
+            <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-teal-500 rounded-full"></div>
+            <div class="pl-4">
+                <h1 class="text-2xl font-semibold text-gray-800">Welcome back, {{ auth()->user()->name }}!</h1>
+                <p class="text-sm text-gray-500">Here is an overview of your current workload and upcoming deadlines.</p>
             </div>
+        </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 px-4 sm:px-0">
-                
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-orange-100 relative overflow-hidden group hover:shadow-md transition-shadow">
-                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-gradient-to-br from-orange-50 to-orange-100 rounded-full z-0 group-hover:scale-150 transition-transform duration-500 ease-in-out"></div>
-                    
-                    <div class="relative z-10 flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Active Tasks</p>
-                            <h4 class="text-4xl font-extrabold text-orange-500">{{ $stats['active'] ?? 0 }}</h4>
-                        </div>
-                        <div class="h-12 w-12 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-500 border border-orange-100 shadow-sm group-hover:scale-110 transition-transform">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-emerald-100 relative overflow-hidden group hover:shadow-md transition-shadow">
-                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-full z-0 group-hover:scale-150 transition-transform duration-500 ease-in-out"></div>
-                    
-                    <div class="relative z-10 flex items-center justify-between">
-                        <div>
-                            <p class="text-xs font-black text-gray-400 uppercase tracking-wider mb-1">Completed To Date</p>
-                            <h4 class="text-4xl font-extrabold text-emerald-500">{{ $stats['completed'] ?? 0 }}</h4>
-                        </div>
-                        <div class="h-12 w-12 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-500 border border-emerald-100 shadow-sm group-hover:scale-110 transition-transform">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </div>
-                    </div>
-                </div>
-
+        {{-- Compact Stats Cards --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3">
+                <p class="text-[10px] font-medium text-gray-500 uppercase">Active Tasks</p>
+                <p class="text-xl font-bold text-indigo-600">{{ $stats['active'] ?? 0 }}</p>
+                <div class="text-[10px] text-gray-400">Pending / In Progress</div>
             </div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3">
+                <p class="text-[10px] font-medium text-gray-500 uppercase">Completed To Date</p>
+                <p class="text-xl font-bold text-teal-600">{{ $stats['completed'] ?? 0 }}</p>
+                <div class="text-[10px] text-gray-400">Total done</div>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3">
+                <p class="text-[10px] font-medium text-gray-500 uppercase">Urgent Tasks</p>
+                <p class="text-xl font-bold text-amber-600">{{ $stats['urgent'] ?? 0 }}</p>
+                <div class="text-[10px] text-gray-400">Due within 3 days</div>
+            </div>
+            <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-3">
+                <p class="text-[10px] font-medium text-gray-500 uppercase">Task Completion</p>
+                <p class="text-xl font-bold text-gray-800">{{ $stats['completed'] ?? 0 }}/{{ ($stats['active'] ?? 0) + ($stats['completed'] ?? 0) }}</p>
+                <div class="text-[10px] text-gray-400">Overall progress</div>
+            </div>
+        </div>
 
-            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden relative px-4 sm:px-0 mx-4 sm:mx-0">
-                
-                <div class="px-6 py-5 border-b border-gray-50 bg-gray-50/50 flex justify-between items-center">
-                    <h4 class="text-base font-extrabold text-gray-900 flex items-center">
-                        <svg class="w-5 h-5 mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Your Most Urgent Deadlines
-                    </h4>
-                </div>
-                
-                <div class="divide-y divide-gray-50">
-                    
-                    @forelse($upcomingTasks ?? [] as $task)
-                    <a href="{{ route('tasks.show', $task->id) }}" class="p-6 hover:bg-red-50/30 transition-colors group flex flex-col sm:flex-row sm:items-center justify-between gap-4 block w-full">
-                        
-                        <div class="flex items-center space-x-4">
-                            <div class="h-12 w-12 rounded-xl bg-red-50 flex items-center justify-center text-red-500 border border-red-100 group-hover:scale-105 transition-transform shrink-0">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+        {{-- Upcoming Deadlines (Urgent Tasks) --}}
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+            <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                <h3 class="text-sm font-semibold text-gray-700">⏰ Your Most Urgent Deadlines</h3>
+            </div>
+            <div class="divide-y divide-gray-100">
+                @forelse($upcomingTasks ?? [] as $task)
+                <a href="{{ route('tasks.show', $task->id) }}" class="block p-4 hover:bg-gray-50 transition-colors group">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="h-10 w-10 rounded-lg bg-amber-100 flex items-center justify-center text-amber-700">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
                             </div>
-                            
                             <div>
-                                <h5 class="text-lg font-bold text-gray-900 group-hover:text-red-600 transition-colors line-clamp-1">
-                                    {{ $task->title }}
-                                </h5>
-                                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mt-1 flex items-center">
-                                    <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
-                                    {{ $task->project->name ?? 'No Project' }}
-                                </p>
+                                <p class="text-sm font-semibold text-gray-900 group-hover:text-indigo-600 transition">{{ $task->title }}</p>
+                                <p class="text-xs text-gray-500">{{ $task->project->name ?? 'No Project' }}</p>
                             </div>
                         </div>
-                        
-                        <div class="sm:text-right pl-16 sm:pl-0">
-                            <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-bold bg-red-50 text-red-600 border border-red-100 shadow-sm whitespace-nowrap">
-                                <svg class="w-3.5 h-3.5 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                Due {{ \Carbon\Carbon::parse($task->due_date)->format('M d') }}
+                        <div class="flex items-center gap-4 pl-12 sm:pl-0">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700">
+                                <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                Due {{ \Carbon\Carbon::parse($task->due_date)->format('M d, Y') }}
                             </span>
                         </div>
-                        
-                    </a>
-                    @empty
-                    <div class="p-12 text-center">
-                        <svg class="mx-auto h-12 w-12 text-emerald-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <h4 class="text-sm font-bold text-gray-900">You're all caught up!</h4>
-                        <p class="text-sm text-gray-500 mt-1">You have no urgent tasks approaching their deadline right now.</p>
                     </div>
-                    @endforelse
-
+                </a>
+                @empty
+                <div class="p-8 text-center text-gray-400">
+                    No urgent deadlines. You're all caught up!
                 </div>
+                @endforelse
             </div>
-
         </div>
     </div>
 </x-app-layout>

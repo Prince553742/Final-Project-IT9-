@@ -32,16 +32,6 @@ class User extends Authenticatable
         'last_login_at' => 'datetime',
     ];
 
-    public function managedProjects()
-    {
-        return $this->hasMany(Project::class, 'manager_id');
-    }
-
-    public function assignedTasks()
-    {
-        return $this->hasMany(Task::class, 'assigned_user_id');
-    }
-
     public function projects()
     {
         return $this->hasMany(Project::class, 'manager_id');

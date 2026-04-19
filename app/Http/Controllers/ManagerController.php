@@ -14,18 +14,25 @@ class ManagerController extends Controller
 
     public function dashboard()
     {
-        // Temporarily remove the where('manager_id', Auth::id()) to confirm the project exists
         $projects = Project::withCount([
-                'tasks as pending_tasks_count' => function ($query) {
-                    $query->where('status', '!=', 'Completed');
-                },
-                'tasks as completed_tasks_count' => function ($query) {
-                    $query->where('status', 'Completed');
-                }
-            ])
+            'tasks as pending_tasks_count' => function ($query) {
+                $query->where('status', '!=', 'Completed');
+            },
+            'tasks as completed_tasks_count' => function ($query) {
+                $query->where('status', 'Completed');
+            }
+        ])->get();
+
+        $recentActivities = ActivityLog::with('user')
+            ->whereHas('task.project', function($q) {
+                $q->where('manager_id', Auth::id());
+            })
+            ->orWhere('user_id', Auth::id())
+            ->latest()
+            ->take(5)
             ->get();
 
-        return view('manager.dashboard', compact('projects'));
+        return view('manager.dashboard', compact('projects', 'recentActivities'));
     }
     
     public function createProject()
@@ -41,9 +48,8 @@ class ManagerController extends Controller
             'description' => 'nullable|string',
         ]);
 
-        // Ensure the key matches 'name' in the Project::create array
         $project = Project::create([
-            'name' => $request->title, // 'name' is the database column, 'title' is your form input
+            'name' => $request->title, 
             'description' => $request->description,
             'manager_id' => Auth::id(),
             'due_date' => now()->addDays(30), 
@@ -94,7 +100,6 @@ class ManagerController extends Controller
 
     public function destroyProject(Project $project)
     {
-        // Security check
         if ($project->manager_id !== Auth::id()) {
             abort(403);
         }
@@ -102,7 +107,6 @@ class ManagerController extends Controller
         $projectName = $project->name; 
         $project->delete();
 
-        // Record in System Logs
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => 'Project Deleted',
@@ -118,11 +122,44 @@ class ManagerController extends Controller
 
         return view('manager.show_project', compact('project'));
     }
-    
-    public function activity()
-    {
-        $logs = \App\Models\ActivityLog::with('user')->latest()->get();
 
-        return view('manager.activity', compact('logs'));
+
+    public function editProject(Project $project)
+    {
+        // Security: ensure the logged-in manager owns this project
+        if ($project->manager_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+        
+        return view('manager.edit_project', compact('project'));
+    }
+
+    public function updateProject(Request $request, Project $project)
+    {
+        // Security check
+        if ($project->manager_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'due_date' => 'required|date',
+        ]);
+
+        $project->update([
+            'name' => $request->name,
+            'description' => $request->description,
+            'due_date' => $request->due_date,
+        ]);
+
+        ActivityLog::create([
+            'user_id' => Auth::id(),
+            'action' => 'Project Updated',
+            'description' => "Manager updated project: {$project->name}"
+        ]);
+
+        return redirect()->route('manager.dashboard')->with('success', 'Project updated successfully!');
     }
 }
+

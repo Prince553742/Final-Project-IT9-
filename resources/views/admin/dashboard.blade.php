@@ -1,160 +1,209 @@
 <x-app-layout>
-    <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
+    <div class="py-6 px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto">
 
-            <div class="px-4 sm:px-0">
-                <h3 class="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-500 tracking-tight mb-2">
-                    Admin Dashboard
-                </h3>
-                <p class="text-gray-500 text-sm font-medium">Overview of system metrics, progress, and user management.</p>
+        {{-- Greeting --}}
+        <div class="mb-6 relative">
+            <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-teal-500 rounded-full"></div>
+            <div class="pl-4">
+                <h1 class="text-2xl font-semibold text-gray-800">Good morning, {{ auth()->user()->name }}!</h1>
+                <p class="text-sm text-gray-500">Here's your project and task overview.</p>
+            </div>
+        </div>
+
+        {{-- Stats Cards --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+            <div class="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl shadow-sm p-5 border border-blue-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-blue-700 uppercase">Total Projects</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-1">{{ $totalProjects ?? 4 }}</p>
+                    </div>
+                    <div class="h-10 w-10 rounded-lg bg-blue-200 flex items-center justify-center text-blue-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"></path></svg>
+                    </div>
+                </div>
+                <div class="mt-2"><span class="text-xs text-blue-600">Active projects</span></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                
-                <div class="bg-gradient-to-br from-indigo-500 to-blue-600 rounded-2xl p-6 shadow-lg shadow-indigo-200/50 flex flex-col justify-center text-white transform transition-all duration-200 hover:-translate-y-1">
-                    <span class="text-indigo-100 text-xs font-black uppercase tracking-wider mb-1">System Projects</span>
-                    <span class="text-4xl font-extrabold">{{ $totalProjects ?? 4 }}</span>
-                </div>
-
-                <div class="bg-gradient-to-br from-purple-500 to-fuchsia-600 rounded-2xl p-6 shadow-lg shadow-purple-200/50 flex flex-col justify-center text-white transform transition-all duration-200 hover:-translate-y-1">
-                    <span class="text-purple-100 text-xs font-black uppercase tracking-wider mb-1">Total Tasks</span>
-                    <span class="text-4xl font-extrabold">{{ $totalTasks ?? 3 }}</span>
-                </div>
-
-                <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col justify-center relative overflow-hidden">
-                    <div class="flex justify-between items-start mb-2 relative z-10">
-                        <span class="text-xs font-black text-gray-500 uppercase tracking-wider">Overall Progress</span>
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 border border-indigo-100">
-                            System Efficiency
-                        </span>
+            <div class="bg-gradient-to-br from-teal-50 to-teal-100 rounded-xl shadow-sm p-5 border border-teal-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-teal-700 uppercase">Total Tasks</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-1">{{ $totalTasks ?? 3 }}</p>
                     </div>
-                    <div class="flex items-center space-x-4 mt-1 relative z-10">
-                        <span class="text-4xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-600 to-purple-600">
-                            {{ $overallProgress ?? 67 }}%
-                        </span>
-                        <div class="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden shadow-inner">
-                            <div class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full" style="width: {{ $overallProgress ?? 67 }}%"></div>
-                        </div>
+                    <div class="h-10 w-10 rounded-lg bg-teal-200 flex items-center justify-center text-teal-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
                     </div>
                 </div>
-
+                <div class="mt-2"><span class="text-xs text-teal-600">Across all projects</span></div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-l-indigo-500 border-y border-r border-gray-100 flex justify-between items-center group hover:bg-indigo-50/30 transition-colors">
-                    <div class="flex items-center space-x-3">
-                        <div class="p-2.5 bg-indigo-50 rounded-xl text-indigo-600 group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                        </div>
-                        <span class="text-sm font-bold text-gray-700">Total Admins</span>
+            <div class="bg-gradient-to-br from-purple-50 to-purple-100 rounded-xl shadow-sm p-5 border border-purple-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-purple-700 uppercase">Completed Tasks</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-1">{{ $completedTasks ?? 0 }}</p>
                     </div>
-                    <span class="text-2xl font-black text-indigo-600">{{ $totalAdmins ?? 1 }}</span>
-                </div>
-                
-                <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-l-purple-500 border-y border-r border-gray-100 flex justify-between items-center group hover:bg-purple-50/30 transition-colors">
-                    <div class="flex items-center space-x-3">
-                        <div class="p-2.5 bg-purple-50 rounded-xl text-purple-600 group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
-                        </div>
-                        <span class="text-sm font-bold text-gray-700">Total Managers</span>
+                    <div class="h-10 w-10 rounded-lg bg-purple-200 flex items-center justify-center text-purple-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                     </div>
-                    <span class="text-2xl font-black text-purple-600">{{ $totalManagers ?? 1 }}</span>
                 </div>
-                
-                <div class="bg-white rounded-2xl p-5 shadow-sm border-l-4 border-l-pink-500 border-y border-r border-gray-100 flex justify-between items-center group hover:bg-pink-50/30 transition-colors">
-                    <div class="flex items-center space-x-3">
-                        <div class="p-2.5 bg-pink-50 rounded-xl text-pink-600 group-hover:scale-110 transition-transform">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        </div>
-                        <span class="text-sm font-bold text-gray-700">Total Members</span>
-                    </div>
-                    <span class="text-2xl font-black text-pink-600">{{ $totalMembers ?? 1 }}</span>
-                </div>
+                <div class="mt-2"><span class="text-xs text-purple-600">{{ $completionRate ?? 0 }}% completion rate</span></div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="px-6 py-5 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-indigo-50/30 flex justify-between items-center">
-                    <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                        User Management
-                    </h3>
+            <div class="bg-gradient-to-br from-amber-50 to-amber-100 rounded-xl shadow-sm p-5 border border-amber-200">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-amber-700 uppercase">Overdue Tasks</p>
+                        <p class="text-3xl font-bold text-gray-800 mt-1">{{ $overdueTasks ?? 0 }}</p>
+                    </div>
+                    <div class="h-10 w-10 rounded-lg bg-amber-200 flex items-center justify-center text-amber-700">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                </div>
+                <div class="mt-2"><span class="text-xs text-amber-600">Need attention</span></div>
+            </div>
+        </div>
+
+        {{-- Two Columns --}}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 items-stretch">
+            {{-- LEFT COLUMN --}}
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-4">👥 User Role Distribution</h3>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="text-center p-3 bg-blue-50 rounded-lg">
+                            <p class="text-2xl font-bold text-blue-600">{{ $totalAdmins ?? 1 }}</p>
+                            <p class="text-xs text-gray-500">Admins</p>
+                        </div>
+                        <div class="text-center p-3 bg-teal-50 rounded-lg">
+                            <p class="text-2xl font-bold text-teal-600">{{ $totalManagers ?? 1 }}</p>
+                            <p class="text-xs text-gray-500">Managers</p>
+                        </div>
+                        <div class="text-center p-3 bg-purple-50 rounded-lg">
+                            <p class="text-2xl font-bold text-purple-600">{{ $totalMembers ?? 1 }}</p>
+                            <p class="text-xs text-gray-500">Team Members</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50/80">
-                            <tr>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-black text-gray-400 uppercase tracking-wider">Name</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-black text-gray-400 uppercase tracking-wider">Email</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-black text-gray-400 uppercase tracking-wider">Status</th>
-                                <th scope="col" class="px-6 py-4 text-left text-xs font-black text-gray-400 uppercase tracking-wider">Role</th>
-                                <th scope="col" class="px-6 py-4 text-right text-xs font-black text-gray-400 uppercase tracking-wider">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody class="bg-white divide-y divide-gray-100">
-                            
-                            @forelse($users ?? [['name' => 'mizpakipot', 'email' => 'mizpakipotthack@gmail.com', 'role' => 'Manager'], ['name' => 'catayoc', 'email' => 'princecarlcatayoc2006@gmail.com', 'role' => 'Team Member']] as $user)
-                            <tr class="hover:bg-indigo-50/30 transition-colors duration-150 group">
-                                
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div class="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 border border-indigo-200 flex items-center justify-center text-indigo-700 font-bold text-xs mr-3 uppercase shadow-sm">
-                                            {{ substr(is_array($user) ? $user['name'] : $user->name, 0, 1) }}
-                                        </div>
-                                        <span class="text-sm font-bold text-gray-800">{{ is_array($user) ? $user['name'] : $user->name }}</span>
-                                    </div>
-                                </td>
-
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <span class="text-sm text-gray-500 font-medium">{{ is_array($user) ? $user['email'] : $user->email }}</span>
-                                </td>
-
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center space-x-2">
-                                        <span class="relative flex h-2.5 w-2.5">
-                                          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-                                        </span>
-                                        <span class="text-sm text-gray-500 font-medium">Active</span>
-                                    </div>
-                                </td>
-
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <form action="#" method="POST" class="m-0">
-                                        @csrf
-                                        @method('PATCH')
-                                        <select name="role" class="block w-36 text-sm font-bold text-gray-700 bg-gray-50 border-gray-200 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 py-1.5 shadow-sm transition-colors cursor-pointer">
-                                            <option value="Admin" {{ (is_array($user) ? $user['role'] : $user->role) == 'Admin' ? 'selected' : '' }}>Admin</option>
-                                            <option value="Manager" {{ (is_array($user) ? $user['role'] : $user->role) == 'Manager' ? 'selected' : '' }}>Manager</option>
-                                            <option value="Team Member" {{ (is_array($user) ? $user['role'] : $user->role) == 'Team Member' ? 'selected' : '' }}>Team Member</option>
-                                        </select>
-                                    </form>
-                                </td>
-
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <form action="#" method="POST" class="inline-block">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="inline-flex items-center px-3 py-1 border border-red-200 text-xs font-bold rounded-lg text-red-600 bg-red-50 hover:bg-red-500 hover:text-white transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 shadow-sm">
-                                            Delete
+                {{-- User Management Table (static rows with trash icon) --}}
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100 bg-gray-50">
+                        <h3 class="text-sm font-semibold text-gray-700">📋 User Management</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-100">
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 text-sm font-medium text-gray-900">member 1</td>
+                                    <td class="px-6 py-4 text-sm text-gray-500">princecarlcatayoc2006@gmail.com</td>
+                                    <td class="px-6 py-4 text-sm">Team Member</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                         </button>
-                                    </form>
-                                </td>
-                                
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="5" class="px-6 py-8 text-center text-gray-400 italic">
-                                    No users found.
-                                </td>
-                            </tr>
-                            @endforelse
-
-                        </tbody>
-                    </table>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 text-sm font-medium text-gray-900">member 2</td>
+                                    <td class="px-6 py-4 text-sm text-gray-500">princeappleid2006@gmail.com</td>
+                                    <td class="px-6 py-4 text-sm">Team Member</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-gray-50">
+                                    <td class="px-6 py-4 text-sm font-medium text-gray-900">manager mizpakipot</td>
+                                    <td class="px-6 py-4 text-sm text-gray-500">mizpakipotthack@gmail.com</td>
+                                    <td class="px-6 py-4 text-sm">Manager</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-gray-400 hover:text-red-500 transition-colors" title="Delete">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
+            {{-- RIGHT COLUMN --}}
+            <div class="flex flex-col gap-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">📈 Overall Progress</h3>
+                    <div class="flex justify-between text-sm text-gray-600 mb-1">
+                        <span>{{ $overallProgress ?? 67 }}% Complete</span>
+                        <span class="text-xs text-gray-400">System Efficiency</span>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                        <div class="bg-gradient-to-r from-indigo-500 to-teal-500 h-2.5 rounded-full" style="width: {{ $overallProgress ?? 67 }}%"></div>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-400">Target: 100%</span>
+                        <span class="text-teal-600 font-medium">{{ $completionRate ?? 0 }}% tasks done</span>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">📊 Task Status Summary</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        @php
+                            $statuses = [
+                                'Pending' => \App\Models\Task::where('status', 'Pending')->count(),
+                                'In Progress' => \App\Models\Task::where('status', 'In Progress')->count(),
+                                'On Hold' => \App\Models\Task::where('status', 'On Hold')->count(),
+                                'Completed' => \App\Models\Task::where('status', 'Completed')->count(),
+                                'Cancelled' => \App\Models\Task::where('status', 'Cancelled')->count(),
+                            ];
+                        @endphp
+                        @foreach($statuses as $label => $count)
+                            <div class="flex justify-between items-center p-2 rounded-lg 
+                                {{ $label == 'Pending' ? 'bg-amber-50' : ($label == 'In Progress' ? 'bg-blue-50' : ($label == 'On Hold' ? 'bg-gray-50' : ($label == 'Completed' ? 'bg-teal-50' : 'bg-red-50'))) }}">
+                                <span class="text-xs font-medium text-gray-600">{{ $label }}</span>
+                                <span class="text-sm font-bold 
+                                    {{ $label == 'Pending' ? 'text-amber-600' : ($label == 'In Progress' ? 'text-blue-600' : ($label == 'On Hold' ? 'text-gray-600' : ($label == 'Completed' ? 'text-teal-600' : 'text-red-600'))) }}">
+                                    {{ $count }}
+                                </span>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">🏆 Top Projects by Tasks</h3>
+                    <div class="space-y-3">
+                        @forelse($topProjects ?? [] as $index => $proj)
+                        <div class="flex items-center justify-between border-b border-gray-100 pb-2">
+                            <div class="flex items-center gap-2">
+                                <span class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold text-white 
+                                    {{ $index % 4 == 0 ? 'bg-blue-500' : ($index % 4 == 1 ? 'bg-teal-500' : ($index % 4 == 2 ? 'bg-purple-500' : 'bg-amber-500')) }}">
+                                    {{ $index + 1 }}
+                                </span>
+                                <div>
+                                    <p class="text-sm font-medium text-gray-800">{{ $proj->name }}</p>
+                                    <p class="text-xs text-gray-400">{{ $proj->tasks_count }} tasks</p>
+                                </div>
+                            </div>
+                            <span class="text-xs font-semibold text-indigo-600 bg-indigo-50 px-2 py-1 rounded-full">{{ $proj->tasks_count }}</span>
+                        </div>
+                        @empty
+                        <p class="text-sm text-gray-400 text-center py-2">No projects yet</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </x-app-layout>
