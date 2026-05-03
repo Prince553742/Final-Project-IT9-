@@ -9,6 +9,9 @@ use App\Models\TaskComment;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TaskAssignedMail;
+use App\Mail\TaskStatusChangedMail;
 
 class TaskController extends Controller
 {
@@ -16,8 +19,13 @@ class TaskController extends Controller
     public function create(Request $request)
     {
         $projectId = $request->query('project_id');
+        if (!$projectId) {
+            return redirect()->route('manager.dashboard')->with('error', 'No project selected.');
+        }
+
+        $project = Project::findOrFail($projectId);
         $users = User::where('role', 'Team Member')->get();
-        return view('manager.create_task', compact('projectId', 'users'));
+        return view('manager.create_task', compact('project', 'users'));
     }
     
     // MANAGER: Store Task
@@ -36,6 +44,11 @@ class TaskController extends Controller
         $validated['created_by'] = Auth::id(); 
 
         $task = Task::create($validated);
+
+        // Send email to assigned user
+        if ($task->assignedUser) {
+            Mail::to($task->assignedUser->email)->send(new TaskAssignedMail($task));
+        }
 
         ActivityLog::create([
             'task_id'     => $task->id,
@@ -62,7 +75,6 @@ class TaskController extends Controller
 
     public function update(Request $request, $id)
     {
-
         $task = Task::findOrFail($id);
     
         if ($task->isCompleted()) {
@@ -103,6 +115,7 @@ class TaskController extends Controller
                          ->with('success', 'Task successfully deleted!');
     }
 
+    // SHARED: Update Status
     public function updateStatus(Request $request, Task $task)
     {
         $request->validate([
@@ -119,7 +132,17 @@ class TaskController extends Controller
             'description' => "Changed status from {$oldStatus} to {$request->status}"
         ]);
 
-        return redirect()->back()->with('success', 'Task status updated successfully!');
+        // Send email to task creator
+        $creator = $task->creator;
+        if ($creator && $creator->email) {
+            Mail::to($creator->email)->send(new TaskStatusChangedMail($task, $oldStatus, $task->status));
+        }
+
+        if ($task->assignedUser && $task->assignedUser->id !== ($creator->id ?? null)) {
+            Mail::to($task->assignedUser->email)->send(new TaskStatusChangedMail($task, $oldStatus, $task->status));
+        }
+
+        return redirect()->back()->with('success', 'Task status updated.');
     }
 
     public function storeComment(Request $request, Task $task)
@@ -162,13 +185,12 @@ class TaskController extends Controller
             ->whereNotIn('status', ['Completed', 'Cancelled'])
             ->orderBy('due_date', 'asc')->take(5)->get();
 
-        // Recent activity (tasks assigned to this member or actions by the member)
         $recentActivities = ActivityLog::with('user')
             ->where(function($q) use ($userId) {
                 $q->where('user_id', $userId)
-                ->orWhereHas('task', function($taskQuery) use ($userId) {
-                    $taskQuery->where('assigned_user_id', $userId);
-                });
+                  ->orWhereHas('task', function($taskQuery) use ($userId) {
+                      $taskQuery->where('assigned_user_id', $userId);
+                  });
             })
             ->latest()
             ->take(5)
@@ -195,8 +217,7 @@ class TaskController extends Controller
 
     public function show(Task $task)
     {
-        $task->load(['project', 'assignedUser', 'comments.user']);
+        $task->load(['project', 'assignedUser', 'comments.user', 'attachments']);
         return view('tasks.show', compact('task'));
     }
-
 }

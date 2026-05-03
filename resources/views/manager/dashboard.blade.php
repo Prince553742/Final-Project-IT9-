@@ -1,7 +1,6 @@
 <x-app-layout>
-    <div class="py-8">
+    <div class="min-h-screen py-8 bg-gray-100">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
-
             {{-- Header --}}
             <div class="px-4 sm:px-0">
                 <h3 class="text-3xl font-extrabold text-gray-800 tracking-tight mb-2">
@@ -12,7 +11,7 @@
                 </p>
             </div>
 
-            {{-- Welcome Banner (MATCH ADMIN STYLE) --}}
+            {{-- Welcome Banner --}}
             <div class="bg-gradient-to-r from-blue-500 to-teal-500 rounded-2xl p-6 shadow-md flex items-center space-x-4 text-white">
                 <div class="p-3 bg-white/20 rounded-xl">
                     <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">

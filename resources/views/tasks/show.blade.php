@@ -1,12 +1,12 @@
 <x-app-layout>
-    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-        {{-- Back Navigation --}}
+    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-gray-100">
+        {{-- Back Navigation (fixed) --}}
         <div class="mb-4">
-            <a href="{{ url()->previous() }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors group">
+            <a href="{{ route('projects.show', $task->project_id) }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors group">
                 <svg class="w-4 h-4 mr-1 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8M3 12a9 9 0 1118 0 8.959 8.959 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3"></path>
                 </svg>
-                Back
+                Back to Project
             </a>
         </div>
 
@@ -44,25 +44,32 @@
                 </div>
                 @endif
 
-                {{-- Comments Section --}}
+                {{-- Comments Section (Chat style) --}}
                 <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
                     <div class="px-5 py-3 border-b border-gray-100 bg-gray-50">
                         <h3 class="text-sm font-semibold text-gray-700">💬 Discussion</h3>
                     </div>
                     <div class="p-5 space-y-4 max-h-96 overflow-y-auto">
                         @forelse($task->comments as $comment)
-                        <div class="flex gap-3">
-                            <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs">
-                                {{ strtoupper(substr($comment->user->name ?? 'U', 0, 1)) }}
-                            </div>
-                            <div class="flex-1">
-                                <div class="flex items-baseline gap-2">
-                                    <span class="text-sm font-medium text-gray-900">{{ $comment->user->name ?? 'Unknown' }}</span>
-                                    <span class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
+                            @php $isMine = $comment->user_id === Auth::id(); @endphp
+                            <div class="flex {{ $isMine ? 'justify-end' : 'justify-start' }}">
+                                <div class="flex gap-2 max-w-[75%] {{ $isMine ? 'flex-row-reverse' : '' }}">
+                                    {{-- Avatar --}}
+                                    <div class="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold text-xs shrink-0">
+                                        {{ strtoupper(substr($comment->user->name ?? 'U', 0, 1)) }}
+                                    </div>
+                                    {{-- Bubble --}}
+                                    <div class="flex flex-col">
+                                        <div class="flex items-baseline gap-2 {{ $isMine ? 'justify-end' : 'justify-start' }}">
+                                            <span class="text-xs font-medium text-gray-900">{{ $comment->user->name ?? 'Unknown' }}</span>
+                                            <span class="text-xs text-gray-400">{{ $comment->created_at->diffForHumans() }}</span>
+                                        </div>
+                                        <div class="mt-1 px-4 py-2 rounded-2xl {{ $isMine ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-gray-100 text-gray-800 rounded-bl-none' }}">
+                                            {{ $comment->comment }}
+                                        </div>
+                                    </div>
                                 </div>
-                                <p class="text-sm text-gray-700 mt-1">{{ $comment->comment }}</p>
                             </div>
-                        </div>
                         @empty
                         <div class="text-center py-6 text-gray-400">
                             No comments yet. Start the discussion!
@@ -82,8 +89,8 @@
                 </div>
             </div>
 
-            {{-- Right Column: Metadata Cards with explicit gap using flex --}}
-            <div class="flex flex-col gap-8">  {{-- gap-8 = 2rem (32px) space between each card --}}
+            {{-- Right Column: Metadata Cards --}}
+            <div class="flex flex-col gap-8">
                 {{-- Status Card --}}
                 <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4">
                     <div class="flex items-center gap-2 mb-3">
@@ -143,6 +150,44 @@
                             {{ substr($task->assignedUser->name ?? 'U', 0, 1) }}
                         </div>
                         <span class="text-sm text-gray-800">{{ $task->assignedUser->name ?? 'Unassigned' }}</span>
+                    </div>
+                </div>
+
+                {{-- File Attachments Card --}}
+                <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="px-4 py-3 border-b border-gray-100 bg-gray-50">
+                        <h3 class="text-sm font-semibold text-gray-700">📎 Attachments</h3>
+                    </div>
+                    <div class="p-4 space-y-3">
+                        @forelse($task->attachments as $attachment)
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                                <a href="{{ route('tasks.attachments.download', ['task' => $task, 'attachment' => $attachment]) }}" class="text-sm text-indigo-600 hover:underline">{{ $attachment->original_name }}</a>
+                                <span class="text-xs text-gray-400">({{ round($attachment->size / 1024) }} KB)</span>
+                            </div>
+                            <form action="{{ route('tasks.attachments.destroy', ['task' => $task, 'attachment' => $attachment]) }}" method="POST" onsubmit="return confirm('Delete this file?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="text-gray-400 hover:text-red-600 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </form>
+                        </div>
+                        @empty
+                        <p class="text-sm text-gray-400 text-center">No attachments yet.</p>
+                        @endforelse
+
+                        <form action="{{ route('tasks.attachments.store', $task) }}" method="POST" enctype="multipart/form-data" class="mt-3">
+                            @csrf
+                            <div class="flex gap-2 items-center">
+                                <input type="file" name="attachment" required
+                                    class="flex-1 text-sm text-gray-500 file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-sm file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200">
+                                <button type="submit" class="px-3 py-1.5 bg-indigo-600 text-white text-sm rounded-lg hover:bg-indigo-700 transition">
+                                    Upload
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -9,6 +9,7 @@ use App\Http\Controllers\ManagerController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\TaskActivityController;
+use App\Http\Controllers\TaskAttachmentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
@@ -19,6 +20,12 @@ Route::get('/', function () {
 
 // --- AUTHENTICATED ROUTES (Shared) ---
 Route::middleware(['auth'])->group(function () {
+
+    Route::prefix('tasks/{task}/attachments')->name('tasks.attachments.')->group(function () {
+        Route::post('/', [TaskAttachmentController::class, 'store'])->name('store');
+        Route::delete('/{attachment}', [TaskAttachmentController::class, 'destroy'])->name('destroy');
+        Route::get('/{attachment}/download', [TaskAttachmentController::class, 'download'])->name('download');
+    });
     
     // Role-based Redirect Dashboard
     Route::get('/dashboard', function () {
@@ -76,6 +83,16 @@ Route::middleware(['auth', 'role:Admin'])->group(function () {
     // Admin Task Management
     Route::get('/admin/tasks', [AdminController::class, 'tasks'])->name('admin.tasks');
     Route::delete('/admin/tasks/{task}', [AdminController::class, 'destroyTask'])->name('admin.tasks.destroy');
+
+    // Excel Exports
+    Route::get('/admin/export/tasks/excel', [AdminController::class, 'exportTasksExcel'])->name('admin.export.tasks.excel');
+    Route::get('/admin/export/projects/excel', [AdminController::class, 'exportProjectsExcel'])->name('admin.export.projects.excel');
+    Route::get('/admin/export/task-status/excel', [AdminController::class, 'exportTaskStatusExcel'])->name('admin.export.task-status.excel');
+
+    // PDF Exports (if not already added)
+    Route::get('/admin/export/tasks/pdf', [AdminController::class, 'exportTasksPdf'])->name('admin.export.tasks.pdf');
+    Route::get('/admin/export/projects/pdf', [AdminController::class, 'exportProjectsPdf'])->name('admin.export.projects.pdf');
+    Route::get('/admin/export/task-status/pdf', [AdminController::class, 'exportTaskStatusPdf'])->name('admin.export.task-status.pdf');
 });
 
 // --- MANAGER ROUTES ---

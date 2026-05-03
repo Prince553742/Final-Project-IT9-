@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-6 px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto">
+    <div class="py-6 px-6 sm:px-8 lg:px-12 max-w-7xl mx-auto bg-gray-100">
 
         {{-- Greeting --}}
         <div class="mb-6 relative">

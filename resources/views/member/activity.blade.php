@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-8">
+    <div class="py-8 bg-gray-100">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-8">
 
             <div class="px-4 sm:px-0 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

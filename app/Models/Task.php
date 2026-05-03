@@ -59,6 +59,11 @@ class Task extends Model
 
     public function comments(): HasMany
     {
-        return $this->hasMany(TaskComment::class)->latest();
+        return $this->hasMany(TaskComment::class)->orderBy('created_at', 'asc');
+    }
+
+    public function attachments()
+    {
+        return $this->hasMany(TaskAttachment::class);
     }
 }

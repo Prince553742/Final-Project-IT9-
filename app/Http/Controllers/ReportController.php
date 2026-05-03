@@ -45,7 +45,6 @@ class ReportController extends Controller
         $totalTasks = Task::count();
         $completionRate = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
 
-        // NEW: User Productivity Summary
         $userProductivity = User::withCount(['tasks as total_tasks'])
             ->withCount(['tasks as completed_tasks' => function($q) {
                 $q->where('status', 'Completed');

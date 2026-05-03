@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Auth;
 
 class ManagerController extends Controller
 {
-
     public function dashboard()
     {
         $projects = Project::withCount([
@@ -40,7 +39,6 @@ class ManagerController extends Controller
         return view('manager.create_project');
     }
 
-
     public function storeProject(Request $request)
     {
         $request->validate([
@@ -64,38 +62,43 @@ class ManagerController extends Controller
         return redirect()->route('manager.dashboard')->with('success', 'Project created!');
     }
 
+    // FIXED: Accept the project as a route parameter
     public function createTask(Project $project)
     {
-        $users = \App\Models\User::where('role', 'Team Member')->get();
-
+        $users = User::where('role', 'Team Member')->get();
         return view('manager.create_task', compact('project', 'users'));
     }
 
-
+    // FIXED: Store task with correct field names
     public function storeTask(Request $request, Project $project)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
-            'assigned_to' => 'required|exists:users,id',
-            'deadline' => 'required|date',        
+            'title'            => 'required|string|max:255',
+            'assigned_user_id' => 'required|exists:users,id',
+            'priority'         => 'required|in:Low,Medium,High,Urgent',
+            'due_date'         => 'required|date',
+            'description'      => 'nullable|string',
         ]);
 
         $task = Task::create([
-            'project_id' => $project->id,
-            'title' => $request->title,
-            'assigned_user_id' => $request->assigned_to,
-            'status' => 'Pending',
-            'due_date' => $request->deadline,
-            'created_by' => Auth::id(), 
+            'project_id'       => $project->id,
+            'title'            => $request->title,
+            'description'      => $request->description,
+            'assigned_user_id' => $request->assigned_user_id,
+            'priority'         => $request->priority,
+            'due_date'         => $request->due_date,
+            'status'           => 'Pending',
+            'created_by'       => Auth::id(),
         ]);
 
         ActivityLog::create([
             'user_id' => Auth::id(),
             'action' => 'Task Assigned',
-            'description' => "Assigned '{$task->title}' to " . $task->assignedUser->name
+            'description' => "Assigned '{$task->title}' to " . ($task->assignedUser->name ?? 'a team member')
         ]);
 
-        return redirect()->route('manager.dashboard')->with('success', 'Task assigned successfully!');
+        return redirect()->route('projects.show', $project->id)
+                         ->with('success', 'Task assigned successfully!');
     }
 
     public function destroyProject(Project $project)
@@ -119,24 +122,19 @@ class ManagerController extends Controller
     public function showProject(Project $project)
     {
         $project->load('tasks.assignedUser');
-
         return view('manager.show_project', compact('project'));
     }
 
-
     public function editProject(Project $project)
     {
-        // Security: ensure the logged-in manager owns this project
         if ($project->manager_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
-        
         return view('manager.edit_project', compact('project'));
     }
 
     public function updateProject(Request $request, Project $project)
     {
-        // Security check
         if ($project->manager_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
@@ -162,4 +160,3 @@ class ManagerController extends Controller
         return redirect()->route('manager.dashboard')->with('success', 'Project updated successfully!');
     }
 }
-

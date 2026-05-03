@@ -1,5 +1,6 @@
 <x-app-layout>
-    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div class="min-h-screen py-6 px-4 sm:px-6 lg:px-8 bg-gray-100">
+        <div class="max-w-7xl mx-auto">
         {{-- Header --}}
         <div class="mb-6 relative">
             <div class="absolute left-0 top-0 w-1 h-full bg-gradient-to-b from-blue-500 to-teal-500 rounded-full"></div>
@@ -67,5 +68,6 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 </x-app-layout>

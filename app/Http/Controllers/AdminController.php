@@ -8,6 +8,11 @@ use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\ActivityLog;
+use App\Exports\TasksExport;
+use App\Exports\ProjectsExport;
+use App\Exports\TaskStatusSummaryExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class AdminController extends Controller
 {
@@ -32,9 +37,6 @@ class AdminController extends Controller
                             ->orderBy('tasks_count', 'desc')
                             ->take(5)
                             ->get();
-
-        // Removed redundant queries: $recentTasks, $upcomingTasks, $recentActivities
-        // They are not used in the current admin dashboard.
 
         return view('admin.dashboard', compact(
             'users',
@@ -101,7 +103,6 @@ class AdminController extends Controller
         return back()->with('status', 'User deleted successfully!');
     }
 
-    // Project Management (Admin)
     public function projects()
     {
         $projects = Project::with('manager')->withCount('tasks')->latest()->paginate(10);
@@ -148,10 +149,27 @@ class AdminController extends Controller
         return redirect()->route('admin.projects')->with('success', 'Project deleted successfully.');
     }
 
-    // Task Management (Admin)
-    public function tasks()
+    public function tasks(Request $request)
     {
-        $tasks = Task::with('project', 'assignedUser')->latest()->paginate(10);
+        $query = Task::with('project', 'assignedUser');
+
+        if ($request->filled('search')) {
+            $query->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->search . '%')
+                  ->orWhere('description', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->filled('priority')) {
+            $query->where('priority', $request->priority);
+        }
+
+        $tasks = $query->latest()->paginate(10)->appends($request->query());
+
         return view('admin.tasks', compact('tasks'));
     }
 
@@ -195,5 +213,47 @@ class AdminController extends Controller
         ]);
 
         return redirect()->route('admin.tasks')->with('success', 'Task updated successfully.');
+    }
+
+    public function exportTasksExcel()
+    {
+        return Excel::download(new TasksExport, 'tasks.xlsx');
+    }
+
+    public function exportTasksPdf()
+    {
+        $tasks = Task::with('project', 'assignedUser')->get();
+        $pdf = Pdf::loadView('exports.tasks_pdf', compact('tasks'));
+        return $pdf->download('tasks.pdf');
+    }
+
+    public function exportProjectsExcel()
+    {
+        return Excel::download(new ProjectsExport, 'projects.xlsx');
+    }
+
+    public function exportProjectsPdf()
+    {
+        $projects = Project::with('manager')->withCount('tasks')->get();
+        $pdf = Pdf::loadView('exports.projects_pdf', compact('projects'));
+        return $pdf->download('projects.pdf');
+    }
+
+    public function exportTaskStatusExcel()
+    {
+        return Excel::download(new TaskStatusSummaryExport, 'task_status_summary.xlsx');
+    }
+
+    public function exportTaskStatusPdf()
+    {
+        $statuses = [
+            'Pending' => Task::where('status', 'Pending')->count(),
+            'In Progress' => Task::where('status', 'In Progress')->count(),
+            'On Hold' => Task::where('status', 'On Hold')->count(),
+            'Completed' => Task::where('status', 'Completed')->count(),
+            'Cancelled' => Task::where('status', 'Cancelled')->count(),
+        ];
+        $pdf = Pdf::loadView('exports.task_status_pdf', compact('statuses'));
+        return $pdf->download('task_status_summary.pdf');
     }
 }

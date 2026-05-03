@@ -1,5 +1,5 @@
 <x-app-layout>
-    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <div class="py-6 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto bg-gray-100">
         {{-- Back Navigation --}}
         <div class="mb-4">
             <a href="{{ route('manager.dashboard') }}" class="inline-flex items-center text-sm font-medium text-gray-500 hover:text-indigo-600 transition-colors group">
@@ -35,11 +35,19 @@
             </div>
         @endif
 
+        {{-- Error Message --}}
+        @if (session('error'))
+            <div class="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+                {{ session('error') }}
+            </div>
+        @endif
+
         {{-- Tasks Card --}}
         <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
             <div class="px-4 py-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
                 <h3 class="text-sm font-semibold text-gray-700">📋 Task Assignments</h3>
-                <a href="{{ route('manager.tasks.create', $project->id) }}" class="inline-flex items-center gap-1 text-xs font-medium text-white bg-indigo-600 px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition">
+                {{-- FIXED: Pass project_id as query parameter correctly --}}
+                <a href="{{ route('manager.tasks.create', ['project_id' => $project->id]) }}" class="inline-flex items-center gap-1 text-xs font-medium text-white bg-indigo-600 px-3 py-1.5 rounded-lg hover:bg-indigo-700 transition">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                     Add New Task
                 </a>
@@ -96,9 +104,11 @@
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap text-right">
                                     <div class="flex justify-end gap-2">
-                                        <a href="{{ route('tasks.edit', $task->id) }}" class="text-gray-400 hover:text-indigo-600 transition" title="Edit">
-                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                                        </a>
+                                        @if (!in_array($task->status, ['Completed', 'Cancelled']))
+                                            <a href="{{ route('tasks.edit', $task->id) }}" class="text-gray-400 hover:text-indigo-600 transition" title="Edit">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                            </a>
+                                        @endif
                                         <form action="{{ route('tasks.destroy', $task->id) }}" method="POST" onsubmit="return confirm('Delete this task?');" class="inline">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="text-gray-400 hover:text-red-600 transition" title="Delete">
