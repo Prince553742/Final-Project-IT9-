@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: minazukis-belly
+    env: php
+    buildCommand: "./render-build.sh"
+    startCommand: "cd public && php -S 0.0.0.0:$PORT"
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_KEY
+        generateValue: true
+      - key: APP_DEBUG
+        value: false
