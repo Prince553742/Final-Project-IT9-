@@ -1,12 +1,38 @@
 FROM php:8.2-cli
 
-# Install system dependencies + PHP extensions including gd
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git curl zip unzip libpq-dev \
+    git curl zip unzip \
+    libpq-dev \
     libpng-dev libjpeg-dev libfreetype6-dev \
+    libzip-dev \
+    libsodium-dev \
+    libxml2-dev \
+    libonig-dev \
+    libcurl4-openssl-dev \
+    libssl-dev \
     nodejs npm \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql gd
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Configure and install all PHP extensions Laravel needs
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install \
+        pdo \
+        pdo_pgsql \
+        pgsql \
+        gd \
+        zip \
+        sodium \
+        opcache \
+        bcmath \
+        mbstring \
+        xml \
+        ctype \
+        fileinfo \
+        tokenizer \
+        curl \
+        pcntl
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
