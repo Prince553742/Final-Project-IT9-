@@ -1,9 +1,12 @@
 FROM php:8.2-cli
 
-# Install dependencies
+# Install system dependencies + PHP extensions including gd
 RUN apt-get update && apt-get install -y \
-    git curl zip unzip libpq-dev nodejs npm \
-    && docker-php-ext-install pdo pdo_pgsql
+    git curl zip unzip libpq-dev \
+    libpng-dev libjpeg-dev libfreetype6-dev \
+    nodejs npm \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_pgsql gd
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
@@ -23,10 +26,8 @@ RUN npm install && npm run build
 # Set permissions
 RUN chmod -R 775 storage bootstrap/cache
 
-# Expose port
 EXPOSE 10000
 
-# Start Laravel
 CMD php artisan config:cache && \
     php artisan route:cache && \
     php artisan migrate --force && \
