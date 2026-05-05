@@ -15,13 +15,13 @@ RUN apt-get update && apt-get install -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Install PHP extensions (split to isolate failures)
+# Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd
 
 RUN docker-php-ext-install pdo pdo_pgsql pgsql
 
-RUN docker-php-ext-install zip sodium bcmath mbstring xml ctype fileinfo tokenizer opcache pcntl
+RUN docker-php-ext-install zip sodium bcmath mbstring xml opcache pcntl
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
