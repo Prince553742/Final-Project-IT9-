@@ -14,7 +14,7 @@ class TaskAttachmentController extends Controller
     public function store(Request $request, Task $task)
     {
         $request->validate([
-            'attachment' => 'required|file|max:10240', // max 10MB
+            'attachment' => 'required|file|max:10240',
         ]);
 
         $file = $request->file('attachment');
@@ -42,8 +42,14 @@ class TaskAttachmentController extends Controller
         return back()->with('success', 'File uploaded successfully.');
     }
 
-    public function destroy(TaskAttachment $attachment)
+    public function destroy(Task $task, TaskAttachment $attachment)
     {
+        // Ensure the attachment belongs to the given task
+        if ($attachment->task_id != $task->id) {
+            abort(404, 'Attachment not found for this task.');
+        }
+
+        // Authorization: only admin or the uploader can delete
         if (Auth::user()->role !== 'Admin' && Auth::id() !== $attachment->user_id) {
             abort(403);
         }
@@ -51,11 +57,23 @@ class TaskAttachmentController extends Controller
         Storage::disk('public')->delete($attachment->path);
         $attachment->delete();
 
-        return back()->with('success', 'File deleted.');
+        ActivityLog::create([
+            'task_id' => $task->id,
+            'user_id' => Auth::id(),
+            'action' => 'File Deleted',
+            'description' => "Deleted file: {$attachment->original_name}"
+        ]);
+
+        return back()->with('success', 'File deleted successfully.');
     }
 
-    public function download(TaskAttachment $attachment)
+    public function download(Task $task, TaskAttachment $attachment)
     {
+        // Ensure the attachment belongs to the given task
+        if ($attachment->task_id != $task->id) {
+            abort(404, 'Attachment not found for this task.');
+        }
+
         return Storage::disk('public')->download($attachment->path, $attachment->original_name);
     }
 }
