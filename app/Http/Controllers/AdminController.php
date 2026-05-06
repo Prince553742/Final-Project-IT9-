@@ -118,13 +118,17 @@ class AdminController extends Controller
     public function updateProject(Request $request, Project $project)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name'        => 'required|string|max:255',
             'description' => 'nullable|string',
-            'due_date' => 'required|date',
-            'manager_id' => 'required|exists:users,id',
+            'due_date'    => 'required|date',
+            'manager_id'  => 'required|exists:users,id',
+            'priority'    => 'required|in:Low,Medium,High,Urgent',
+            'status'      => 'required|in:Pending,Active,On Hold,Completed,Cancelled',
         ]);
 
-        $project->update($request->only(['name', 'description', 'due_date', 'manager_id']));
+        $project->update($request->only([
+            'name', 'description', 'due_date', 'manager_id', 'priority', 'status'
+        ]));
 
         ActivityLog::create([
             'user_id' => Auth::id(),
@@ -256,4 +260,6 @@ class AdminController extends Controller
         $pdf = Pdf::loadView('exports.task_status_pdf', compact('statuses'));
         return $pdf->download('task_status_summary.pdf');
     }
+
+    
 }

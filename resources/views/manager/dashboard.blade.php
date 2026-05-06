@@ -47,11 +47,23 @@
                                 </h4>
                             </a>
 
-                            {{-- Progress Badge --}}
-                            <span class="text-xs font-semibold bg-teal-50 text-teal-600 px-2 py-1 rounded-full">
-                                {{ is_array($project) ? $project['completed'] : $project->completed_tasks_count }} 
-                                / 
-                                {{ is_array($project) ? $project['total'] : $project->total_tasks_count }}
+                            {{-- Priority Badge --}}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium 
+                                @if($project->priority == 'Low') bg-gray-100 text-gray-700
+                                @elseif($project->priority == 'Medium') bg-blue-100 text-blue-700
+                                @elseif($project->priority == 'High') bg-orange-100 text-orange-700
+                                @else bg-red-100 text-red-700 @endif">
+                                Priority: {{ $project->priority ?? 'Medium' }}
+                            </span>
+
+                            {{-- Status Badge --}}
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium 
+                                @if($project->status == 'Pending') bg-amber-100 text-amber-700
+                                @elseif($project->status == 'Active') bg-green-100 text-green-700
+                                @elseif($project->status == 'On Hold') bg-yellow-100 text-yellow-700
+                                @elseif($project->status == 'Completed') bg-teal-100 text-teal-700
+                                @else bg-red-100 text-red-700 @endif">
+                                Status: {{ $project->status ?? 'Pending' }}
                             </span>
                         </div>
                         

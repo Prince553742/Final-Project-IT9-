@@ -53,13 +53,37 @@
                             @error('due_date') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
 
-                        {{-- Optional: Additional Settings (placeholder) --}}
+                        {{-- Priority Card --}}
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
                             <div class="flex items-center gap-2 mb-3">
-                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path></svg>
-                                <h3 class="text-sm font-medium text-gray-700">Additional Settings</h3>
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"></path></svg>
+                                <h3 class="text-sm font-medium text-gray-700">Priority</h3>
                             </div>
-                            <p class="text-xs text-gray-400">Future options like project priority, status, etc., will appear here.</p>
+                            <select name="priority" id="priority" required
+                                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <option value="Low" {{ old('priority') == 'Low' ? 'selected' : '' }}>Low</option>
+                                <option value="Medium" {{ old('priority') == 'Medium' ? 'selected' : '' }}>Medium</option>
+                                <option value="High" {{ old('priority') == 'High' ? 'selected' : '' }}>High</option>
+                                <option value="Urgent" {{ old('priority') == 'Urgent' ? 'selected' : '' }}>Urgent</option>
+                            </select>
+                            @error('priority') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+
+                        {{-- Status Card --}}
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                            <div class="flex items-center gap-2 mb-3">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                <h3 class="text-sm font-medium text-gray-700">Project Status</h3>
+                            </div>
+                            <select name="status" id="status" required
+                                class="w-full rounded-lg border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <option value="Pending" {{ old('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                <option value="Active" {{ old('status') == 'Active' ? 'selected' : '' }}>Active</option>
+                                <option value="On Hold" {{ old('status') == 'On Hold' ? 'selected' : '' }}>On Hold</option>
+                                <option value="Completed" {{ old('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
+                                <option value="Cancelled" {{ old('status') == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                            </select>
+                            @error('status') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                         </div>
                     </div>
                 </div>

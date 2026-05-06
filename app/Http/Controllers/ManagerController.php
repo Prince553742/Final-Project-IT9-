@@ -13,14 +13,16 @@ class ManagerController extends Controller
 {
     public function dashboard()
     {
-        $projects = Project::withCount([
-            'tasks as pending_tasks_count' => function ($query) {
-                $query->where('status', '!=', 'Completed');
-            },
-            'tasks as completed_tasks_count' => function ($query) {
-                $query->where('status', 'Completed');
-            }
-        ])->get();
+        $projects = Project::where('manager_id', Auth::id())
+            ->withCount([
+                'tasks as pending_tasks_count' => function ($query) {
+                    $query->where('status', '!=', 'Completed');
+                },
+                'tasks as completed_tasks_count' => function ($query) {
+                    $query->where('status', 'Completed');
+                }
+            ])
+            ->get();
 
         $recentActivities = ActivityLog::with('user')
             ->whereHas('task.project', function($q) {
@@ -42,15 +44,20 @@ class ManagerController extends Controller
     public function storeProject(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:255',
+            'title'       => 'required|string|max:255',
             'description' => 'nullable|string',
+            'due_date'    => 'required|date',
+            'priority'    => 'required|in:Low,Medium,High,Urgent',
+            'status'      => 'required|in:Pending,Active,On Hold,Completed,Cancelled',
         ]);
 
         $project = Project::create([
-            'name' => $request->title, 
+            'name'        => $request->title,
             'description' => $request->description,
-            'manager_id' => Auth::id(),
-            'due_date' => now()->addDays(30), 
+            'manager_id'  => Auth::id(),
+            'due_date'    => $request->due_date,
+            'priority'    => $request->priority,
+            'status'      => $request->status,
         ]);
 
         ActivityLog::create([
@@ -62,14 +69,12 @@ class ManagerController extends Controller
         return redirect()->route('manager.dashboard')->with('success', 'Project created!');
     }
 
-    // FIXED: Accept the project as a route parameter
     public function createTask(Project $project)
     {
         $users = User::where('role', 'Team Member')->get();
         return view('manager.create_task', compact('project', 'users'));
     }
 
-    // FIXED: Store task with correct field names
     public function storeTask(Request $request, Project $project)
     {
         $request->validate([
@@ -140,15 +145,19 @@ class ManagerController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name'        => 'required|string|max:255',
             'description' => 'nullable|string',
-            'due_date' => 'required|date',
+            'due_date'    => 'required|date',
+            'priority'    => 'required|in:Low,Medium,High,Urgent',
+            'status'      => 'required|in:Pending,Active,On Hold,Completed,Cancelled',
         ]);
 
         $project->update([
-            'name' => $request->name,
+            'name'        => $request->name,
             'description' => $request->description,
-            'due_date' => $request->due_date,
+            'due_date'    => $request->due_date,
+            'priority'    => $request->priority,
+            'status'      => $request->status,
         ]);
 
         ActivityLog::create([

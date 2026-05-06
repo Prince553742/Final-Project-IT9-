@@ -19,6 +19,23 @@
                         <h1 class="text-2xl font-semibold text-gray-800">{{ $project->name }}</h1>
                         <p class="text-sm text-gray-500 mt-1">{{ $project->description }}</p>
                     </div>
+                    <div class="flex gap-2 mt-2">
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium 
+                            @if($project->priority == 'Low') bg-gray-100 text-gray-700
+                            @elseif($project->priority == 'Medium') bg-blue-100 text-blue-700
+                            @elseif($project->priority == 'High') bg-orange-100 text-orange-700
+                            @else bg-red-100 text-red-700 @endif">
+                            Priority: {{ $project->priority ?? 'Medium' }}
+                        </span>
+                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium 
+                            @if($project->status == 'Pending') bg-amber-100 text-amber-700
+                            @elseif($project->status == 'Active') bg-green-100 text-green-700
+                            @elseif($project->status == 'On Hold') bg-yellow-100 text-yellow-700
+                            @elseif($project->status == 'Completed') bg-teal-100 text-teal-700
+                            @else bg-red-100 text-red-700 @endif">
+                            Status: {{ $project->status ?? 'Pending' }}
+                        </span>
+                    </div>
                     <div class="mt-2 md:mt-0">
                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-indigo-100 text-indigo-700">
                             {{ $project->tasks->where('status', 'Completed')->count() }} / {{ $project->tasks->count() }} Tasks Completed

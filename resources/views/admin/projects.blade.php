@@ -43,6 +43,8 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Manager</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tasks</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Due Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Priority</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                                 <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
@@ -65,6 +67,33 @@
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
                                         {{ \Carbon\Carbon::parse($project->due_date)->format('M d, Y') }}
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        @php
+                                            $priorityColors = [
+                                                'Low'    => 'bg-gray-100 text-gray-700',
+                                                'Medium' => 'bg-blue-100 text-blue-700',
+                                                'High'   => 'bg-orange-100 text-orange-700',
+                                                'Urgent' => 'bg-red-100 text-red-700',
+                                            ];
+                                        @endphp
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $priorityColors[$project->priority] ?? 'bg-gray-100 text-gray-700' }}">
+                                            {{ $project->priority ?? 'Medium' }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 whitespace-nowrap">
+                                        @php
+                                            $statusColors = [
+                                                'Pending'   => 'bg-amber-100 text-amber-700',
+                                                'Active'    => 'bg-green-100 text-green-700',
+                                                'On Hold'   => 'bg-yellow-100 text-yellow-700',
+                                                'Completed' => 'bg-teal-100 text-teal-700',
+                                                'Cancelled' => 'bg-red-100 text-red-700',
+                                            ];
+                                        @endphp
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $statusColors[$project->status] ?? 'bg-gray-100 text-gray-700' }}">
+                                            {{ $project->status ?? 'Pending' }}
+                                        </span>
                                     </td>
                                     <td class="px-4 py-3 whitespace-nowrap text-right">
                                         <div class="flex justify-end gap-2">
@@ -96,7 +125,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-4 py-8 text-center text-gray-400">
+                                    <td colspan="7" class="px-4 py-8 text-center text-gray-400">
                                         No projects found.
                                     </td>
                                 </tr>
