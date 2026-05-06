@@ -3,9 +3,9 @@ FROM php:8.2-cli
 RUN apt-get update && apt-get install -y \
     git curl zip unzip libpq-dev \
     libpng-dev libjpeg-dev libfreetype6-dev \
-    nginx \
+    libzip-dev nginx \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql gd
+    && docker-php-ext-install pdo pdo_pgsql gd zip opcache
 
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
@@ -16,7 +16,6 @@ RUN composer install --no-dev --optimize-autoloader
 RUN chmod -R 775 storage bootstrap/cache
 RUN chown -R www-data:www-data /var/www
 
-# Nginx config
 RUN echo 'server { \n\
     listen 10000; \n\
     root /var/www/public; \n\
@@ -29,7 +28,6 @@ RUN echo 'server { \n\
     } \n\
 }' > /etc/nginx/sites-enabled/default
 
-RUN docker-php-ext-install opcache
 RUN echo 'listen = 127.0.0.1:9000' >> /usr/local/etc/php-fpm.d/www.conf
 
 EXPOSE 10000
