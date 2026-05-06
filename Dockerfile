@@ -1,40 +1,51 @@
 FROM php:8.2-cli
 
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    git curl zip unzip libpq-dev \
+    git curl zip unzip \
+    libpq-dev \
     libpng-dev libjpeg-dev libfreetype6-dev \
-    libzip-dev nginx \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql gd zip opcache
+    libzip-dev \
+    libsodium-dev \
+    libxml2-dev \
+    libonig-dev \
+    libcurl4-openssl-dev \
+    libssl-dev \
+    nodejs npm \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd
+
+RUN docker-php-ext-install pdo pdo_pgsql pgsql
+
+RUN docker-php-ext-install zip sodium bcmath mbstring xml opcache pcntl
+
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Set working directory
 WORKDIR /var/www
+
+# Copy project files
 COPY . .
 
+# Install PHP dependencies
 RUN composer install --no-dev --optimize-autoloader
+
+# Install Node dependencies and build assets
+RUN npm install \
+    && chmod -R 755 node_modules/.bin \
+    && npm run build
+
+# Set permissions
 RUN chmod -R 775 storage bootstrap/cache
-RUN chown -R www-data:www-data /var/www
-
-RUN echo 'server { \n\
-    listen 10000; \n\
-    root /var/www/public; \n\
-    index index.php; \n\
-    location / { try_files $uri $uri/ /index.php?$query_string; } \n\
-    location ~ \.php$ { \n\
-        fastcgi_pass 127.0.0.1:9000; \n\
-        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name; \n\
-        include fastcgi_params; \n\
-    } \n\
-}' > /etc/nginx/sites-enabled/default
-
-RUN echo 'listen = 127.0.0.1:9000' >> /usr/local/etc/php-fpm.d/www.conf
 
 EXPOSE 10000
 
 CMD php artisan config:cache && \
     php artisan route:cache && \
     php artisan migrate --force && \
-    php artisan storage:link && \
-    php-fpm -D && \
-    nginx -g 'daemon off;'
+    php -S 0.0.0.0:10000 -t public
